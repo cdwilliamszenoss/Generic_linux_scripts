@@ -1,2 +1,2 @@
 # Match between two patterns and count number of matches
-gawk '/\<Line\>/{flag=1;next}/\<\/Line\>/{flag=0} { if ($flag ~ 5){ sum += 1} }; END {print sum}' file
+$ gawk '/\<Line\>/{flag=1;next}/\<\/Line\>/{flag=0} { if ($0 == 5){ sum += 1} }; END {print sum}' file
