@@ -1,2 +1,8 @@
 # Match between two patterns and count number of matches
-$ gawk '/\<Line\>/{flag=1;next}/\<\/Line\>/{flag=0} { if ($0 == 5){ sum += 1} }; END {print sum}' file
+gawk '/\<Line\>/{flag=1;next}/\<\/Line\>/{flag=0} { if ($0 == 5){ sum += 1} }; END {print sum}' file
+
+# Count ips
+awk 'match($0,/([0-9]{1,3}\.){2}/) {print substr($0,RSTART,RLENGTH)}' | sort   | uniq -c | sort -n
+
+
+
