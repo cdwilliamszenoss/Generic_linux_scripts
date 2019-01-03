@@ -10,7 +10,6 @@ awk '/^[0-9].*/{print "<START>";print $0; print "</START>"}' emerging-Block-IPs.
  grep -r "" * |awk  'match($0,/WARNING.*/) || match($0,/ERROR.*/){print substr($0,RSTART,RLENGTH)}' | sort | uniq -c | sort -n
 
 
-
 #Count IPs between Tags
 
 gawk '/\<START\>/{flag=1;next}/\<\/START\>/{flag=0} {if (match($0,/([0-9]{1,3}\.){3}([0-9]){1,3}/)) {print substr($0,RSTART,RLENGTH) } }' emerging-Block-IPs.txt1 | sort | uniq -c|sort
@@ -22,14 +21,27 @@ Regex Match
 "matches everything to the end" problem with:  
 /<simpleChoice.*>/
 
-
 Able to resolve the issue with:
 /<simpleChoice[^>]*>/
-
 
 Match up to first /
 vm[^/]*?/"
 
+------------------------------------------------------------------------------------------------
+
+https://stackoverflow.com/questions/2973436/regex-lookahead-lookbehind-and-atomic-groups
+
+# Search for foo. Will match bar before foo.
+echo foobarbarfoo | grep -P 'bar(?=foo)'
+
+# Search for foo. Will not match if bar is before it.
+echo foobarbarfoo | grep -P 'bar(?!foo)'
+
+# Search for bar. Will match foo after the word bar
+echo foobarbarfoo | grep -P '(?<=bar)foo'
+
+# Search for bar. Will not match foo after the word bar
+echo foobarbarfoo | grep -P '(?<!bar)foo'
 
 
 
