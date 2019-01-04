@@ -34,13 +34,13 @@ https://stackoverflow.com/questions/2973436/regex-lookahead-lookbehind-and-atomi
 # Search for foo. Will match bar before foo.
 echo foobarbarfoo | grep -P 'bar(?=foo)'
 
-# Search for foo. Will not match if bar is before it.
+# Search for foo. Will not match if bar is before foo.
 echo foobarbarfoo | grep -P 'bar(?!foo)'
 
-# Search for bar. Will match foo after the word bar
+# Search for bar. Will match foo behind bar
 echo foobarbarfoo | grep -P '(?<=bar)foo'
 
-# Search for bar. Will not match foo after the word bar
+# Search for bar. Will not match foo behind bar
 echo foobarbarfoo | grep -P '(?<!bar)foo'
 
 
