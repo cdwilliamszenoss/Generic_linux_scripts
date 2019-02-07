@@ -9,6 +9,8 @@ awk '/^[0-9].*/{print "<START>";print $0; print "</START>"}' emerging-Block-IPs.
 # Sort on all WARNINGS and ERRORs
  grep -r "" * |awk  'match($0,/WARNING.*/) || match($0,/ERROR.*/){print substr($0,RSTART,RLENGTH)}' | sort | uniq -c | sort -n
 
+# Print line starting at field 3 to end of line
+awk '{ print substr($0, index($0,$3)) }'
 
 #Count IPs between Tags
 
