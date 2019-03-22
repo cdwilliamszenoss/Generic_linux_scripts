@@ -9,16 +9,22 @@ awk '/^[0-9].*/{print "<START>";print $0; print "</START>"}' emerging-Block-IPs.
 # Sort on all WARNINGS and ERRORs
  grep -r "" * |awk  'match($0,/WARNING.*/) || match($0,/ERROR.*/){print substr($0,RSTART,RLENGTH)}' | sort | uniq -c | sort -n
 
-# Print line starting at field 3 to end of line
-awk '{ print substr($0, index($0,$3)) }'
-
 #Count IPs between Tags
 
 gawk '/\<START\>/{flag=1;next}/\<\/START\>/{flag=0} {if (match($0,/([0-9]{1,3}\.){3}([0-9]){1,3}/)) {print substr($0,RSTART,RLENGTH) } }' emerging-Block-IPs.txt1 | sort | uniq -c|sort
 
 -----------------------------------------------------------------------------------------
 
-Regex Match
+
+Print line starting at field 3 to end of line
+awk '{ print substr($0, index($0,$3)) }'
+
+
+- Regex Match
+
+Substitue the Nth match on a line.
+ gawk '$0 = gensub(/:/," ",2){print}'
+
 
 "matches everything to the end" problem with:  
 /<simpleChoice.*>/
