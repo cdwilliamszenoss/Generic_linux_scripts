@@ -4,15 +4,19 @@
 
 cd /var/log/sa; d=$(date |awk '{print $3}');j=$(($d-3)); echo -e "\n#### IDLE TIME ####" |tee -a /tmp/idle-$(hostname).log; for(($j;$j<=$d;j++));do printf "%02d\n" $j; done | while read i; do echo; echo "== `ls -alh sa${i} | awk '{print $6,$7,$8}'` =="; sar -f sa${i} | awk '!/^$/ {print $1 " "$2 " "$9}' | sort -n -k 3 | egrep -v "Average|%idle|Linux" | head -5; done |tee -a /tmp/idle-$(hostname).log
 
+*********************************************************************************************************
+
 # Loop through sar logs for last 4 days and print times with highest Major Faults for each day.
 
 cd /var/log/sa; d=$(date |awk '{print $3}');j=$(($d-3)); echo -e "\n#### MAJOR FAULTS ####"|tee -a /tmp/majorfaults-$(hostname).log; for(($j;$j<=$d;j++));do printf "%02d\n" $j; done | while read i; do echo; echo "== `ls -alh sa${i} | awk '{print $6,$7,$8}'` =="; sar -B -f sa${i} | awk '{print $1 " "$2 " "$6}' | sort -n -k 3 -r | egrep -v "Average|majflt/s|Linux" | head -5; done |tee -a /tmp/majorfaults-$(hostname).log
 
+*********************************************************************************************************
 
 # Loop through sar logs for last 4 days and print the highest IO wait for each day.
 
 cd /var/log/sa; d=$(date |awk '{print $3}');j=$(($d-3)); echo -e "\n#### IO WAIT ####"|tee -a /tmp/iowait-$(hostname).log; for(($j;$j<=$d;j++));do printf "%02d\n" $j; done | while read i; do echo; echo "== `ls -alh sa${i} | awk '{print $6,$7,$8}'` =="; sar -f sa${i} | awk '{print $1 " "$2 " "$7}' | sort -n -k 3 -r | egrep -v "Average|%iowait|Linux" | head -5; done |tee -a /tmp/iowait-$(hostname).log
 
+*********************************************************************************************************
 
 # Loop through sar logs for last 4 days and print the highest Load Avg for each day.
 
