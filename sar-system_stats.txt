@@ -1,0 +1,72 @@
+# -B to Report paging statistics
+# -r to Report memory utilization statistics
+
+----------------------------
+- Logs are save to the /tmp directory
+
+
+************************************
+# Loop through sar logs for last 4 days and print Busiest CPU Time for each day.
+
+ cd /var/log/sa; d=$(date |awk '{print $3}');j=$(($d-3)); echo -e "\n#### CPU IDLE TIME ####" |tee -a /tmp/cpu-idle-$(hostname).log; for(($j;$j<=$d;j++));do printf "%02d\n" $j; done | while read i; do echo; echo "== `ls -alh sa${i} | awk '{print $6,$7,$8}'` =="; sar -u -f sa${i} | awk '!/^$/ && !/RESTART/ {print $1 " "$2 " "$9}' | sort -n -k 3  | egrep -v "Average|%idle|Linux" | head -5; done |tee -a /tmp/cpu-idle-$(hostname).log
+
+*************************************
+
+
+# Loop through sar logs for last 4 days and print times with highest Major Faults for each day.
+
+cd /var/log/sa; d=$(date |awk '{print $3}');j=$(($d-3)); echo -e "\n#### MAJOR FAULTS ####"|tee -a /tmp/majorfaults-$(hostname).log; for(($j;$j<=$d;j++));do printf "%02d\n" $j; done | while read i; do echo; echo "== `ls -alh sa${i} | awk '{print $6,$7,$8}'` =="; sar -B -f sa${i} | awk '!/^$/ && !/RESTART/ {print $1 " "$2 " "$6}' | sort -n -k 3 -r | egrep -v "Average|majflt/s|Linux" | head -5; done |tee -a /tmp/majorfaults-$(hostname).log
+
+************************************
+
+# Loop through sar logs for last 4 days and print the highest IO wait for each day.
+
+cd /var/log/sa; d=$(date |awk '{print $3}');j=$(($d-3)); echo -e "\n#### IO WAIT ####"|tee -a /tmp/iowait-$(hostname).log; for(($j;$j<=$d;j++));do printf "%02d\n" $j; done | while read i; do echo; echo "== `ls -alh sa${i} | awk '{print $6,$7,$8}'` =="; sar -f sa${i} | awk '!/^$/ && !/RESTART/ {print $1 " "$2 " "$7}' | sort -n -k 3 -r | egrep -v "Average|%iowait|Linux" | head -5; done |tee -a /tmp/iowait-$(hostname).log
+************************************
+
+# Loop through sar logs for last 4 days and print the highest Load Avg for each day.
+
+cd /var/log/sa; d=$(date |awk '{print $3}');j=$(($d-3)); echo -e "\n#### 15 Mins LOAD AVG ####"|tee -a /tmp/loadAvg15-$(hostname).log; for(($j;$j<=$d;j++));do printf "%02d\n" $j; done | while read i; do echo; echo "== `ls -alh sa${i} | awk '{print $6,$7,$8}'` =="; sar -q -f sa${i} | awk '!/^$/ && !/RESTART/ {print $1 " "$2 " "$7}' | sort -n -k 3 -r | egrep -v "Average|ldavg-15|Linux" | head -5; done|tee -a /tmp/loadAvg15-$(hostname).log
+
+************************************
+
+Network device errors
+
+cd /var/log/sa; d=$(date |awk '{print $3}');j=$(($d-3)); echo -e "\n#### Network EDEV Report ####"|tee -a /tmp/sar-report-$(hostname).log; for(($j;$j<=$d;j++));do printf "%02d\n" $j; done | while read i; do echo; echo "== `ls -alh sa${i} | awk '{print $6,$7,$8}'` =="; sar -n EDEV -f sa${i} | awk '!/^$/ && !/RESTART/ && /IFACE/ || /Average/' | sort -n -k 3; done|tee -a /tmp/sar-report-$(hostname).log
+
+
+************************************
+
+# Show Interface stats
+sar -n DEV
+
+# Show Interface Errors
+sar -n EDEV
+
+# Show NFS Client stats
+sar -n NFS
+
+# Show NFS Server stats - ( sar -f sa06 -n NFSD | awk '{print $4,$1,$2}' | sort -n | head -10 )
+# badcall/s - Number of bad RPC requests received per second, those whose processing generated an error.
+sar -n NFSD
+
+# Show sockets stats
+sar -n SOCK
+
+# Report load averages
+-q
+
+# Report memory statistics
+-R
+
+# Report memory utilizations statistics
+-r
+
+# Report swap space utilization
+-S
+
+# Report swapping statics
+-W
+
+# Report context switching
+-w
