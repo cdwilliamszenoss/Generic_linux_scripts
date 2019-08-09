@@ -2,11 +2,15 @@
 # -r to Report memory utilization statistics
 
 ----------------------------
-- Logs are save to the /tmp directory
-
+- Logs are saved to the /tmp directory
 
 ************************************
-# Loop through sar logs for last 4 days and print Busiest CPU Time for each day.
+# Memory information
+
+free -h > /tmp/$(hostname).free.log
+
+************************************
+# Loop through sar logs for last 4 days and print Busiest CPU/ SYSTEM Idle Time for each day.
 
  cd /var/log/sa; d=$(date |awk '{print $3}');j=$(($d-3)); echo -e "\n#### CPU IDLE TIME ####" |tee -a /tmp/cpu-idle-$(hostname).log; for(($j;$j<=$d;j++));do printf "%02d\n" $j; done | while read i; do echo; echo "== `ls -alh sa${i} | awk '{print $6,$7,$8}'` =="; sar -u -f sa${i} | awk '!/^$/ && !/RESTART/ {print $1 " "$2 " "$9}' | sort -n -k 3  | egrep -v "Average|%idle|Linux" | head -5; done |tee -a /tmp/cpu-idle-$(hostname).log
 
@@ -30,12 +34,24 @@ cd /var/log/sa; d=$(date |awk '{print $3}');j=$(($d-3)); echo -e "\n#### 15 Mins
 
 ************************************
 
-Network device errors
+# Network device errors
 
 cd /var/log/sa; d=$(date |awk '{print $3}');j=$(($d-3)); echo -e "\n#### Network EDEV Report ####"|tee -a /tmp/sar-report-$(hostname).log; for(($j;$j<=$d;j++));do printf "%02d\n" $j; done | while read i; do echo; echo "== `ls -alh sa${i} | awk '{print $6,$7,$8}'` =="; sar -n EDEV -f sa${i} | awk '!/^$/ && !/RESTART/ && /IFACE/ || /Average/' | sort -n -k 3; done|tee -a /tmp/sar-report-$(hostname).log
 
 
 ************************************
+# Memory Statistics
+
+cd /var/log/sa; d=$(date |awk '{print $3}');j=$(($d-3)); echo -e "\n#### Memory Statistics Percent Used ####"|tee -a /tmp/sar-memory-report-$(hostname).log; for(($j;$j<=$d;j++));do printf "%02d\n" $j; done | while read i; do echo; echo "== `ls -alh sa${i} | awk '{print $6,$7,$8}'` =="; sar -r -f sa${i} | awk '!/^$/ && !/RESTART/ {print $1 " "$2 " "$5}' | sort -n -k 3 -r | egrep -v "Average|memused|ldavg-15|Linux" | head -5; done|tee -a /tmp/sar-memory-report-$(hostname).log
+
+************************************
+
+Generic:
+
+cd /var/log/sa; d=$(date |awk '{print $3}');j=$(($d-3)); echo -e "\n#### Script Report ####"|tee -a /tmp/sar-report-$(hostname).log; for(($j;$j<=$d;j++));do printf "%02d\n" $j; done | while read i; do echo; echo "== `ls -alh sa${i} | awk '{print $6,$7,$8}'` =="; sar -P ALL -f sa${i} | awk '!/^$/ && !/RESTART/ {print $1 " "$2 " "$7}' | sort -n -k 3 -r | egrep -v "Average|ldavg-15|Linux" | head -5; done|tee -a /tmp/sar-report-$(hostname).log
+
+
+----------------------------
 
 # Show Interface stats
 sar -n DEV
