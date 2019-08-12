@@ -33,6 +33,8 @@ Able to resolve the issue with:
 Match up to first /
 vm[^/]*?/"
 
+Match string after /device/ up to the next /. It will match /device/matchHere
+awk 'match($0,/device[^/]+\/[^/]*?/) {print substr($0,RSTART,RLENGTH)}'
 ------------------------------------------------------------------------------------------------
 
 https://stackoverflow.com/questions/2973436/regex-lookahead-lookbehind-and-atomic-groups
