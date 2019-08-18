@@ -1,0 +1,54 @@
+# Match between two patterns and count number of matches
+gawk '/\<Line\>/{flag=1;next}/\<\/Line\>/{flag=0} { if ($0 == 5){ sum += 1} }; END {print sum}' file
+
+# Count ips
+awk 'match($0,/([0-9]{1,3}\.){2}/) {print substr($0,RSTART,RLENGTH)}' | sort   | uniq -c | sort -n
+
+awk '/^[0-9].*/{print "<START>";print $0; print "</START>"}' emerging-Block-IPs.txt
+
+# Sort on all WARNINGS and ERRORs
+ grep -r "" * |awk  'match($0,/WARNING.*/) || match($0,/ERROR.*/){print substr($0,RSTART,RLENGTH)}' | sort | uniq -c | sort -n
+
+#Count IPs between Tags
+
+gawk '/\<START\>/{flag=1;next}/\<\/START\>/{flag=0} {if (match($0,/([0-9]{1,3}\.){3}([0-9]){1,3}/)) {print substr($0,RSTART,RLENGTH) } }' emerging-Block-IPs.txt1 | sort | uniq -c|sort
+
+-----------------------------------------------------------------------------------------
+
+awk 'match($0,/:/) {print substr($0,RSTART,RLENGTH)}' 
+
+Print line starting at field 3 to end of line
+awk '{ print substr($0, index($0,$3)) }'
+
+Substitue the Nth match on a line.
+ gawk '$0 = gensub(/:/," ",2){print}'
+
+
+"matches everything to the end" problem with:  
+/<simpleChoice.*>/
+
+Able to resolve the issue with:
+/<simpleChoice[^>]*>/
+
+Match up to first /
+vm[^/]*?/"
+
+Match string after /device/ up to the next /. It will match /device/matchHere
+awk 'match($0,/device[^/]+\/[^/]*?/) {print substr($0,RSTART,RLENGTH)}'
+------------------------------------------------------------------------------------------------
+
+https://stackoverflow.com/questions/2973436/regex-lookahead-lookbehind-and-atomic-groups
+
+# Search for foo. Will match bar before foo.
+echo foobarbarfoo | grep -P 'bar(?=foo)'
+
+# Search for foo. Will not match if bar is before foo.
+echo foobarbarfoo | grep -P 'bar(?!foo)'
+
+# Search for bar. Will match foo behind bar
+echo foobarbarfoo | grep -P '(?<=bar)foo'
+
+# Search for bar. Will not match foo behind bar
+echo foobarbarfoo | grep -P '(?<!bar)foo'
+
+
