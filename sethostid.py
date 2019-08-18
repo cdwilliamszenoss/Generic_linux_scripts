@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
 # To re-use the original hostid. Convert from hexadecimal to decimal
-# https://www.rapidtables.com/convert/number/hex-dec-bin-converter.html
-# Value passed into pack method is decimal value.
+# Convert Hex to Decimal : int(hex_value,16)
+# Convert Decimal to Hex : hex(decimal_value)
+
+# Pass decimal value into pack method
 
 from struct import pack
 f = open('/etc/hostid', 'w')
