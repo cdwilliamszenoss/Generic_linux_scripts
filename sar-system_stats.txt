@@ -15,7 +15,7 @@ free -h > /tmp/$(hostname).free.log
 
 
 ************************************
-# Loop through sar logs for last 4 days and show when the server had least amount of CPU/SYSTEM Idle Time.
+# Loop through sar logs for last 4 days and show when the server had the least amount of CPU/SYSTEM Idle Time.
 
 cd /var/log/sa; d=$(date |awk '{print $3}');j=$(($d-3)); echo -e "\n#### CPU IDLE TIME ####" |tee -a /tmp/cpu-idle-$(hostname).log; for(($j;$j<=$d;j++));do printf "%02d\n" $j; done | while read i; do echo; echo "== `ls -alh sa${i} 2> /dev/null | awk '{print $6,$7,$8}'` =="; sar -u -f sa${i} 2> /dev/null | awk '!/^$/ && !/RESTART/ {print $0 | "sort -k9"}' |awk '{a[NR]=$0} END {print a[NR]; for (i=1;i<NR;i++) print a[i]}' | egrep -v "Average|Linux" | head -10 ; done |tee -a /tmp/cpu-idle-$(hostname).log
 
@@ -54,15 +54,6 @@ cd /var/log/sa; d=$(date |awk '{print $3}');j=$(($d-3)); echo -e "\n#### BLOCKED
 
 ************************************
 
-
-# Network device errors (not useful)
-
-cd /var/log/sa; d=$(date |awk '{print $3}');j=$(($d-3)); echo -e "\n#### Network EDEV Report ####"|tee -a /tmp/sar-report-$(hostname).log; for(($j;$j<=$d;j++));do printf "%02d\n" $j; done | while read i; do echo; echo "== `ls -alh sa${i} | awk '{print $6,$7,$8}'` =="; sar -n EDEV -f sa${i} | awk '!/^$/ && !/RESTART/ && /IFACE/ || /Average/' | sort -n -k 3; done|tee -a /tmp/sar-report-$(hostname).log
-
-
-************************************
-
-----------------------------
 
 # Show Interface stats
 sar -n DEV
