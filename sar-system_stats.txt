@@ -17,40 +17,32 @@ free -h > /tmp/$(hostname).free.log
 ************************************
 # Loop through sar logs for last 4 days and show when the server had the least amount of CPU/SYSTEM Idle Time.
 
-cd /var/log/sa; d=$(date |awk '{print $3}');j=$(($d-3)); echo -e "\n#### CPU IDLE TIME ####" |tee -a /tmp/cpu-idle-$(hostname).log; for(($j;$j<=$d;j++));do printf "%02d\n" $j; done | while read i; do echo; echo "== `ls -alh sa${i} 2> /dev/null | awk '{print $6,$7,$8}'` =="; sar -u -f sa${i} 2> /dev/null | awk '!/^$/ && !/RESTART/ {print $0 | "sort -k9"}' |awk '{a[NR]=$0} END {print a[NR]; for (i=1;i<NR;i++) print a[i]}' | egrep -v "Average|Linux" | head -10 ; done |tee -a /tmp/cpu-idle-$(hostname).log
+cd /var/log/sa; d=$(date |awk '{print $3}');j=$(($d-3)); echo -e "\n#### CPU IDLE TIME ####" |tee /tmp/cpu-idle-$(hostname).log; for(($j;$j<=$d;j++));do printf "%02d\n" $j; done | while read i; do echo; echo "== `ls -alh sa${i} 2> /dev/null | awk '{print $6,$7,$8}'` =="; sar -u -f sa${i} 2> /dev/null | awk '!/^$/ && !/RESTART/ {print $0 }' | sort -k9 -g | egrep -v "Average|ldavg-15|Linux"|head -10  ; done |tee -a /tmp/cpu-idle-$(hostname).log
 
 *************************************
-
-
 # Loop through sar logs for last 4 days and print times with highest Major Faults for each day.
 
-cd /var/log/sa; d=$(date |awk '{print $3}');j=$(($d-3)); echo -e "\n#### MAJOR FAULTS ####"|tee -a /tmp/majorfaults-$(hostname).log; for(($j;$j<=$d;j++));do printf "%02d\n" $j; done | while read i; do echo; echo "== `ls -alh sa${i} 2> /dev/null | awk '{print $6,$7,$8}'` =="; sar -B -f sa${i} 2> /dev/null | awk '!/^$/ && !/RESTART/ {print $0 | "sort -g -k 6 -r"}'|awk '{a[NR]=$0} END {print a[NR]; for (i=1;i<NR;i++) print a[i]}' | egrep -v "Average|Linux" | head -10 ; done |tee -a /tmp/majorfaults-$(hostname).log
+cd /var/log/sa; d=$(date |awk '{print $3}');j=$(($d-3)); echo -e "\n#### MAJOR FAULTS ####"|tee /tmp/majorfaults-$(hostname).log; for(($j;$j<=$d;j++));do printf "%02d\n" $j; done | while read i; do echo; echo "== `ls -alh sa${i} 2> /dev/null | awk '{print $6,$7,$8}'` =="; sar -B -f sa${i} 2> /dev/null | awk '!/^$/ && !/RESTART/ {print $0 | "sort -k6 -g -r"}'|awk '{a[NR]=$0} END {print a[NR]; for (i=1;i<NR;i++) print a[i]}' | egrep -v "Average|Linux" | head -10 ; done |tee -a /tmp/majorfaults-$(hostname).log
 
 ************************************
-
-
 # Loop through sar logs for last 4 days and print times with highest Paging out to disk activity for each day.
 
-cd /var/log/sa; d=$(date |awk '{print $3}');j=$(($d-3)); echo -e "\n#### PAGING OUT ####"|tee -a /tmp/paging-$(hostname).log; for(($j;$j<=$d;j++));do printf "%02d\n" $j; done | while read i; do echo; echo "== `ls -alh sa${i} 2> /dev/null | awk '{print $6,$7,$8}'` =="; sar -B -f sa${i} 2> /dev/null | awk '!/^$/ && !/RESTART/ {print $0 | "sort -g -k 4 -r"}'|awk '{a[NR]=$0} END {print a[NR]; for (i=1;i<NR;i++) print a[i]}' | egrep -v "Average|Linux" | head -10 ; done |tee -a /tmp/paging-$(hostname).log
+cd /var/log/sa; d=$(date |awk '{print $3}');j=$(($d-3)); echo -e "\n#### PAGING OUT ####"|tee /tmp/paging-$(hostname).log; for(($j;$j<=$d;j++));do printf "%02d\n" $j; done | while read i; do echo; echo "== `ls -alh sa${i} 2> /dev/null | awk '{print $6,$7,$8}'` =="; sar -B -f sa${i} 2> /dev/null | awk '!/^$/ && !/RESTART/ {print $0 | "sort -k4 -g -r"}'|awk '{a[NR]=$0} END {print a[NR]; for (i=1;i<NR;i++) print a[i]}' | egrep -v "Average|Linux" | head -10 ; done |tee -a /tmp/paging-$(hostname).log
 
 ************************************
-
 # Loop through sar logs for last 4 days and print the highest IO wait for each day.
 
-cd /var/log/sa; d=$(date |awk '{print $3}');j=$(($d-3)); echo -e "\n#### IO WAIT ####"|tee -a /tmp/iowait-$(hostname).log; for(($j;$j<=$d;j++));do printf "%02d\n" $j; done | while read i; do echo; echo "== `ls -alh sa${i} 2> /dev/null | awk '{print $6,$7,$8}'` =="; sar -f sa${i} 2> /dev/null | awk '!/^$/ && !/RESTART/ {print $0 |"sort -g -k7 -r"}' |awk '{a[NR]=$0} END {print a[NR]; for (i=1;i<NR;i++) print a[i]}'| egrep -v "Average|Linux" | head -10; done |tee -a /tmp/iowait-$(hostname).log
+cd /var/log/sa; d=$(date |awk '{print $3}');j=$(($d-3)); echo -e "\n#### IO WAIT ####"|tee /tmp/iowait-$(hostname).log; for(($j;$j<=$d;j++));do printf "%02d\n" $j; done | while read i; do echo; echo "== `ls -alh sa${i} 2> /dev/null | awk '{print $6,$7,$8}'` =="; sar -f sa${i} 2> /dev/null | awk '!/^$/ && !/RESTART/ {print $0 |"sort -k7 -g -r"}' |awk '{a[NR]=$0} END {print a[NR]; for (i=1;i<NR;i++) print a[i]}'| egrep -v "Average|Linux" | head -10; done |tee -a /tmp/iowait-$(hostname).log
 
 ************************************
-
 # Loop through sar logs for last 4 days and print the highest Load Avg for each day.
 
-cd /var/log/sa; d=$(date |awk '{print $3}');j=$(($d-3)); echo -e "\n#### 15 Mins LOAD AVG ####"|tee -a /tmp/loadAvg15-$(hostname).log; for(($j;$j<=$d;j++));do printf "%02d\n" $j; done | while read i; do echo; echo "== `ls -alh sa${i} 2> /dev/null | awk '{print $6,$7,$8}'` =="; sar -q -f sa${i} 2> /dev/null| awk '!/^$/ && !/RESTART/ {print $0 |"sort -g -k7"}' | egrep -v "Average|Linux" | head -10; done|tee -a /tmp/loadAvg15-$(hostname).log
-
+cd /var/log/sa; d=$(date |awk '{print $3}');j=$(($d-3)); echo -e "\n#### 15 Mins LOAD AVG ####"|tee /tmp/loadAvg15-$(hostname).log; for(($j;$j<=$d;j++));do printf "%02d\n" $j; done | while read i; do echo; echo "== `ls -alh sa${i} 2> /dev/null | awk '{print $6,$7,$8}'` =="; sar -q -f sa${i} 2> /dev/null| awk '!/^$/ && !/RESTART/ {print $0 |"sort -k7 -g -r"}' |awk '{a[NR]=$0} END {print a[NR]; for (i=1;i<NR;i++) print a[i]}'| egrep -v "Average|Linux" | head -10; done|tee -a /tmp/loadAvg15-$(hostname).log
 
 ************************************
 # Loop through sar logs for last 4 days and print the highest count of Blocked Processes (Waiting for IO) for each day.
 
-cd /var/log/sa; d=$(date |awk '{print $3}');j=$(($d-3)); echo -e "\n#### BLOCKED PROCESSES ####"|tee -a /tmp/blockprocess-$(hostname).log; for(($j;$j<=$d;j++));do printf "%02d\n" $j; done | while read i; do echo; echo "== `ls -alh sa${i} 2> /dev/null | awk '{print $6,$7,$8}'` =="; sar -q -f sa${i} 2> /dev/null| awk '!/^$/ && !/RESTART/ {print $0 |"sort -r -k8"}' | egrep -v "Average|Linux" | head -10; done|tee -a /tmp/blockprocess-$(hostname).log
-
+cd /var/log/sa; d=$(date |awk '{print $3}');j=$(($d-3)); echo -e "\n#### BLOCKED PROCESSES ####"|tee /tmp/blockprocess-$(hostname).log; for(($j;$j<=$d;j++));do printf "%02d\n" $j; done | while read i; do echo; echo "== `ls -alh sa${i} 2> /dev/null | awk '{print $6,$7,$8}'` =="; sar -q -f sa${i} 2> /dev/null| awk '!/^$/ && !/RESTART/ {print $0 |"sort -k8 -g -r"}' |awk '{a[NR]=$0} END {print a[NR]; for (i=1;i<NR;i++) print a[i]}' | egrep -v "Average|Linux" | head -10; done|tee -a /tmp/blockprocess-$(hostname).log
 
 ************************************
 
